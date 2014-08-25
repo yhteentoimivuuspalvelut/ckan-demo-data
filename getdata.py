@@ -3,19 +3,13 @@ import urllib
 import sys
 import json
 
-base = 'http://datahub.io/api'
+base = 'http://alpha.avoindata.fi/data/api'
 demodatafile = 'data.json'
 current = json.load(open(demodatafile))
 
 datasets = [
-    'adur_district_spending',
-    "afghanistan-election-data",
-    'afterfibre',
-    "gold-prices",
-    "italyregionalaccounts",
-    'malawi-aid-projects',
-    "newcastle-city-council-payments-over-500", 
-    "us-national-foreclosure-statistics-january-2012"
+	"kuormituksen-testidataa",
+	"baconese-testidataa"
     ]
 
 def sync():
@@ -28,17 +22,19 @@ def sync():
     json.dump(current, outfo, indent=2, sort_keys=True)
 
 def get_dataset(name):
-    url = base + '/rest/dataset/' + name
+    url = base + '/3/action/package_show?id=' + name
     fo = urllib.urlopen(url)
     parsed = json.load(fo)
+    parsed = parsed['result']
+    from pprint import pprint
+    pprint(parsed)
     for resource in parsed['resources']:
         for key in ['webstore_url', 'webstore_last_updated',
-                'resource_group_id', 'package_id', 'position',
-                'tracking_summary', 'cache_url']:
+                'resource_group_id',  'position',
+                'cache_url']:
             del resource[key]
-    for key in ['isopen', 'groups', 'ckan_url', 'download_url',
-        'notes_rendered', 'ratings_average', 'ratings_count', 'revision_id',
-        'tracking_summary', 'type', 'metadata_modified', 'metadata_created',
+    for key in ['isopen', 'groups', 'revision_id',
+        'type', 'metadata_modified', 'metadata_created',
         'id'
         ]:
         del parsed[key]
